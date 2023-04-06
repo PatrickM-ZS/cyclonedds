@@ -16,6 +16,12 @@
 extern "C" {
 #endif
 
+/** This value indicates the (platform-specific) default priority,
+ *  of which the actual numeric value will be retrieved before use.
+ *  For platforms that don't provide a default the priority of the calling thread will be used.
+ */
+#define DDSRT_SCHED_PRIO_DEFAULT INT_MAX
+
 /**
  * @brief Thread scheduling classes
  * @{

@@ -330,11 +330,11 @@ ddsrt_thread_create (
 #if !defined(__ZEPHYR__)
   if (tattr.schedClass == DDSRT_SCHED_DEFAULT)
   {
-    if (tattr.schedPriority != 0)
+    if (tattr.schedPriority != DDSRT_SCHED_PRIO_DEFAULT)
     {
       /* If caller doesn't set the class, he must not try to set the priority, which we
        approximate by expecting a 0. FIXME: should do this as part of config validation */
-      DDS_ERROR("ddsrt_thread_create(%s): schedClass DEFAULT but priority != 0 is unsupported\n", name);
+      DDS_ERROR("ddsrt_thread_create(%s): schedClass DEFAULT with non-default priority is unsupported\n", name);
       goto err;
     }
   }
@@ -369,19 +369,25 @@ ddsrt_thread_create (
 #endif
         break;
     }
-    if (tattr.schedClass != DDSRT_SCHED_DEFAULT) {
+    if (tattr.schedClass != DDSRT_SCHED_DEFAULT)
+    {
       if ((result = pthread_attr_setschedpolicy (&attr, policy)) != 0)
       {
         DDS_ERROR("ddsrt_thread_create(%s): pthread_attr_setschedpolicy(%d) failed with error %d\n", name, policy, result);
         goto err;
       }
     }
-    sched_param.sched_priority = tattr.schedPriority;
-    if ((result = pthread_attr_setschedparam (&attr, &sched_param)) != 0)
+
+    if (tattr.schedPriority != DDSRT_SCHED_PRIO_DEFAULT)
     {
-      DDS_ERROR("ddsrt_thread_create(%s): pthread_attr_setschedparam(priority = %d) failed with error %d\n", name, tattr.schedPriority, result);
-      goto err;
+      sched_param.sched_priority = tattr.schedPriority;
+      if ((result = pthread_attr_setschedparam (&attr, &sched_param)) != 0)
+      {
+        DDS_ERROR("ddsrt_thread_create(%s): pthread_attr_setschedparam(priority = %d) failed with error %d\n", name, tattr.schedPriority, result);
+        goto err;
+      }
     }
+
 #if !defined(__ZEPHYR__)
     if ((result = pthread_attr_setinheritsched (&attr, PTHREAD_EXPLICIT_SCHED)) != 0)
     {

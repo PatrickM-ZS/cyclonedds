@@ -375,8 +375,8 @@ ddsrt_thread_create(
       attr->schedClass != DDSRT_SCHED_REALTIME)
   {
     return DDS_RETCODE_BAD_PARAMETER;
-  } else if (attr->schedPriority < 0 ||
-             attr->schedPriority > (configMAX_PRIORITIES - 1))
+  } else if (attr->schedPriority != DDSRT_SCHED_PRIO_DEFAULT) &&
+             (attr->schedPriority < 0 || attr->schedPriority > (configMAX_PRIORITIES - 1))
   {
     return DDS_RETCODE_BAD_PARAMETER;
   }
@@ -389,10 +389,10 @@ ddsrt_thread_create(
     }
   }
 
-  /* Assume that when the default priority of zero (0) is specified, the user
+  /* Assume that when the default priority is specified, the user
      wants the thread to inherit the priority of the calling thread. */
   assert(0 == tskIDLE_PRIORITY);
-  if (attr->schedPriority == 0) {
+  if (attr->schedPriority == DDSRT_SCHED_PRIO_DEFAULT) {
     prio = uxTaskPriorityGet(NULL);
   } else {
     prio = (UBaseType_t)attr->schedPriority;

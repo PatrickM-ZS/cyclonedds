@@ -19,6 +19,6 @@ ddsrt_threadattr_init (
 {
   assert(tattr != NULL);
   tattr->schedClass = DDSRT_SCHED_DEFAULT;
-  tattr->schedPriority = 0;
+  tattr->schedPriority = DDSRT_SCHED_PRIO_DEFAULT;
   tattr->stackSize = 0;
 }

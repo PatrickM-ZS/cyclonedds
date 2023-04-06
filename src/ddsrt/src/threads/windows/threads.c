@@ -151,16 +151,20 @@ ddsrt_thread_create(
      on GetPriorityClass result. */
   /* FIXME: The logic here might be incorrect.
      https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-setthreadpriority */
-  prio = attr->schedPriority;
+  if (attr->schedPriority == DDSRT_SCHED_PRIO_DEFAULT) {
+    prio = THREAD_PRIORITY_NORMAL;
+  } else {
+    prio = attr->schedPriority;
+  }
   if (GetPriorityClass(GetCurrentProcess()) == REALTIME_PRIORITY_CLASS) {
-    if (attr->schedPriority < -7)
+    if (prio < -7)
       prio = THREAD_PRIORITY_IDLE;
-    else if (attr->schedPriority > 6)
+    else if (prio > 6)
       prio = THREAD_PRIORITY_TIME_CRITICAL;
   } else {
-    if (attr->schedPriority < THREAD_PRIORITY_LOWEST)
+    if (prio < THREAD_PRIORITY_LOWEST)
       prio = THREAD_PRIORITY_IDLE;
-    else if (attr->schedPriority > THREAD_PRIORITY_HIGHEST)
+    else if (prio > THREAD_PRIORITY_HIGHEST)
       prio = THREAD_PRIORITY_TIME_CRITICAL;
   }
 

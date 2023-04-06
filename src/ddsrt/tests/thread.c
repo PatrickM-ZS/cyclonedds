@@ -248,6 +248,6 @@ CU_Test(ddsrt_thread, attribute)
 
   ddsrt_threadattr_init(&attr);
   CU_ASSERT_EQUAL(attr.schedClass, DDSRT_SCHED_DEFAULT);
-  CU_ASSERT_EQUAL(attr.schedPriority, 0);
+  CU_ASSERT_EQUAL(attr.schedPriority, DDSRT_SCHED_PRIO_DEFAULT);
   CU_ASSERT_EQUAL(attr.stackSize, 0);
 }
